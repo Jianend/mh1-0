@@ -1,21 +1,26 @@
 package com.example.mh10.tp;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-@Controller
+@RestController
 @RequestMapping("/tp")
 public class tp {
     @Value("${basePath}")
@@ -23,43 +28,23 @@ public class tp {
     String basePath;
     static File dir ;
     static List<File> allFileList;
-
-
+    @Autowired
+    tpUrl tpUrl;
 
 
 
     @GetMapping
-    public   void   tps(HttpServletResponse response) throws IOException {
+    public   String     tps(HttpServletResponse response) throws IOException {
+        List<String> arrayList = tpUrl.tpUrls();
+        int v =(int)( Math.random() * arrayList.size());
+        String fileall = arrayList.get(v);
+        System.out.println(fileall);
+//        return"redirect:"+fileall;
+        return "<img src=\""+fileall+"\">";
 
-        int v =(int)( Math.random() * allFileList.size());
-        String fileall = allFileList.get(v).getName();
-        response.setContentType("image/jpeg");
-//        System.out.println(fileall);
-        FileInputStream fileInputStream = new FileInputStream(new File(basePath + fileall));
-        ServletOutputStream outputStream = response.getOutputStream();
-        byte[] bytes=new byte[1024];
-        int  len=0;
-        while ((len=(fileInputStream.read(bytes)))!=-1){
-            outputStream.write(bytes,0,len);
-            outputStream.flush();
-        }
-        outputStream.close();
-        fileInputStream.close();
     }
 
-    public tp(@Value("${basePath}") String basePath){
-        dir= new File(basePath);
 
-        allFileList = new ArrayList<>();
-        // 判断文件夹是否存在
-        if (!dir.exists()) {
-            System.out.println("目录不存在");
-
-        }
-        getAllFile(dir, allFileList);
-
-
-     }
     public static void getAllFile(File fileInput, List<File> allFileList) {
 //        fileInput.
 
